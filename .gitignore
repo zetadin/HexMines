@@ -1,2 +1,5 @@
 db.sqlite3
 */__pycache__
+deploy.sh
+django_secret.key
+django_allowed_hosts

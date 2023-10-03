@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 import os
+import sys
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,21 +22,26 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-hfrfoe101n&2$zl@s6lqr(chskpe@dy!0hb6k729+we%exkub3') # real secret key is read from env
+SECRET_KEY = 'django-insecure-hfrfoe101n&2$zl@s6lqr(chskpe@dy!0hb6k729+we%exkub3' # real secret key is read from file
+if(os.path.isfile("django_secret.key")):
+    with open("django_secret.key") as key_file:
+        SECRET_KEY = key_file.read().strip()
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
-if(not DEBUG):
-    SECURE_SSL_REDIRECT = True
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
+RUNNING_DEVSERVER = (len(sys.argv) > 1 and sys.argv[1] == 'runserver')
+DEBUG = RUNNING_DEVSERVER
+# if(not DEBUG):
+#     SECURE_SSL_REDIRECT = True
+#     SESSION_COOKIE_SECURE = True
+#     CSRF_COOKIE_SECURE = True
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 if(not DEBUG):
-    other_hosts = os.environ.get('DJANGO_ALLOWED_HOSTS', '').split(';')
-    for host in other_hosts:
-        ALLOWED_HOSTS.append(host.strip())
-        print("ALLOWED_HOSTS:", ALLOWED_HOSTS)
+    if(os.path.isfile("django_allowed_hosts")):
+        with open("django_allowed_hosts") as hosts_file:
+            other_hosts = hosts_file.readlines()
+            for host in other_hosts:
+                ALLOWED_HOSTS.append(host.strip())
 
 
 
