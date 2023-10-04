@@ -3,3 +3,4 @@ db.sqlite3
 deploy.sh
 django_secret.key
 django_allowed_hosts
+static
