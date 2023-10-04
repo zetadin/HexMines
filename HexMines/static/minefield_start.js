@@ -1,8 +1,31 @@
 
-var playing = false;
 var generated = false;
+var map_size = 5;
+
+
+function resize_canvas(){
+    // resize the minefield_canvas
+    const minefield_div_size = Math.min(window.innerHeight, window.innerWidth)
+    let minefield_div = document.getElementById("minefield_div");
+    style = window.getComputedStyle(minefield_div);
+    let side_extra = 2*parseFloat(style['borderWidth']) + parseFloat(style['padding']) //want some white space around border
+    let canvas = document.getElementById("minefield_canvas");
+    style = window.getComputedStyle(canvas);
+    side_extra += parseFloat(style['borderWidth']);
+    const canvas_size = Math.floor(minefield_div_size - 2.0*side_extra )
+    canvas.height = canvas_size
+    canvas.width = canvas_size
+}
+
+// register listener on window size change
+window.addEventListener('resize', (event) => {resize_canvas()}, true);
+
+
+
 
 async function generate(field_size) {
+    map_size = field_size
+
     // after done generating, set a flag to allow canvas drawing
     generated = true;
 }
@@ -40,28 +63,17 @@ function strt(field_size) {
     // hide the start_div by sliding it out of screen
     let start_div = document.getElementById("start_div");
     let style = window.getComputedStyle(start_div);
-    console.log(style.transform)
     let shift = parseInt(style['marginTop']) + start_div.offsetHeight;
     // register listener to disable showing start_div after it is off-screen
     start_div.addEventListener("transitionend", () => {
         start_div.style.display="none"
       });
     start_div.style.transform = `translate(-50%, ${-shift}px)`;
-    style = window.getComputedStyle(start_div);
-    console.log(style.transform)
+        
     
 
     // resize the minefield_canvas
-    const minefield_div_size = Math.min(window.innerHeight, window.innerWidth)
-    let minefield_div = document.getElementById("minefield_div");
-    style = window.getComputedStyle(minefield_div);
-    let side_extra = 2*parseFloat(style['borderWidth']) + parseFloat(style['padding']) //want some white space around border
-    let canvas = document.getElementById("minefield_canvas");
-    style = window.getComputedStyle(canvas);
-    side_extra += parseFloat(style['borderWidth']);
-    const canvas_size = Math.floor(minefield_div_size - 2.0*side_extra )
-    canvas.height = canvas_size
-    canvas.width = canvas_size
+    resize_canvas()
 
     // register listener to draw the canvas after fade in
     minefield_div.addEventListener("transitionend", () => {
