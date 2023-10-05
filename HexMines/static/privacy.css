@@ -19,7 +19,7 @@
 }
 
 .title_txt {
-    font-size: clamp(30px, 3vw, 100px);
+    font-size: min(clamp(30px, 8vw, 100px), max(30px, 4vh));
     margin: 2px;
 }
 
@@ -39,4 +39,8 @@
     transition: transform .5s;
     text-align: left;
     display: block;
+}
+
+br {
+    margin-bottom: 0.5em;
 }

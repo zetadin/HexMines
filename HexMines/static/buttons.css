@@ -36,7 +36,7 @@
 }
 
 .start_txt {
-    font-size: clamp(30px, 2vw, 100px);
+    font-size: min(clamp(30px, 8vw, 100px), max(30px, 4vh));
     opacity: 1;
     margin: 2px;
 }
@@ -64,38 +64,23 @@
     opacity: 1;
     background-color: #0B5C11;
     color:white;
-    font-size: clamp(20px, 1.2vw, 50px);
+    font-size: min(clamp(20px, 6vw, 75px), max(20px, 3vh));
     padding: 8px 8px;
     margin: 8px 8px;
     border-radius: 8px;
 }
 
 .button_greyed_out {
-    opacity: 1;
     background-color: #131613;
     color:grey;
-    font-size: clamp(20px, 1.2vw, 50px);
-    padding: 8px 8px;
-    margin: 8px 8px;
-    border-radius: 8px;
 }
 
 .button_red {
-    opacity: 1;
     background-color: #aa2037;
     color:Black;
-    font-size: clamp(20px, 1.2vw, 50px);
-    padding: 8px 8px;
-    margin: 8px 8px;
-    border-radius: 8px;
 }
 
 .button_yellow {
-    opacity: 1;
     background-color: #b89521;
     color:Black;
-    font-size: clamp(20px, 1.2vw, 50px);
-    padding: 8px 8px;
-    margin: 8px 8px;
-    border-radius: 8px;
 }
