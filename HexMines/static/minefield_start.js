@@ -1,6 +1,7 @@
 
 var generated = false;
 var map_size = 5;
+var map = undefined;
 
 
 function resize_canvas(){
@@ -15,6 +16,18 @@ function resize_canvas(){
     const canvas_size = Math.floor(minefield_div_size - 2.0*side_extra )
     canvas.height = canvas_size
     canvas.width = canvas_size
+
+    if(typeof map !== 'undefined'){
+        map.recalc_scale();
+        if(generated){
+            draw_canvas_grid(); // redraw canvas, because resizing wipes it
+        }
+    }
+    else{ // retry scaling after map is instantiated
+        setTimeout(() => {
+            resize_canvas();
+        }, 10);
+    }
 }
 
 // register listener on window size change
@@ -25,6 +38,7 @@ window.addEventListener('resize', (event) => {resize_canvas()}, true);
 
 async function generate(field_size) {
     map_size = field_size
+    map = new Map(map_size, map_size, document.getElementById("minefield_canvas"));
 
     // after done generating, set a flag to allow canvas drawing
     generated = true;
@@ -42,8 +56,12 @@ function draw_canvas_grid(){
     let canvas = document.getElementById("minefield_canvas");
     let ctx = canvas.getContext('2d');
 
-    ctx.font = "16px serif";
-    ctx.strokeText("Debug text", 8, 16+1);
+    // draw map
+    map.draw(ctx);
+
+    // // draw debug text
+    // ctx.font = "16px serif";
+    // ctx.strokeText("Debug text", 8, 16+1);
     
 }
 
