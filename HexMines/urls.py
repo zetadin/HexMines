@@ -20,4 +20,5 @@ from . import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.minefield_view, name='minefield'),
+    path('privacy', views.privacy_view, name='privacy'),
 ]

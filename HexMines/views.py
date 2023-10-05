@@ -14,3 +14,8 @@ def minefield_view(request):
     template = loader.get_template('minefield.html')
     context={}
     return HttpResponse(template.render(context, request))
+
+def privacy_view(request):
+    template = loader.get_template('privacy.html')
+    context={}
+    return HttpResponse(template.render(context, request))
