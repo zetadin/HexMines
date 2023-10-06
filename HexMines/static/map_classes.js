@@ -1,13 +1,16 @@
 const sqrtthree = Math.sqrt(3.0);
 const hextheta = 2 * Math.PI / 6;
 
+var images = {}
+
 
 class Map {
     constructor(height, width, containing_canvas, init=true) {
       this.height = height;
       this.width = width;
-      this.hexes = [];
-      this.units = []; // units we will draw
+      this.hexes = {};
+      this.mines = {};
+      this.flags = {};
       this.hex_scale = 10;
       this.canvas = containing_canvas;
       this.hex_border_w = 1;
@@ -23,7 +26,7 @@ class Map {
                 var hex = new Hex(x,y);
                 hex.color = "#c0c0c0"; //light grey
                 hex.border_w = this.hex_border_w;
-                this.hexes.push(hex);
+                this.hexes[`${x}_${y}`] = hex;
               } 
           }
           
@@ -55,16 +58,39 @@ class Map {
     }
 
     draw(ctx) {
-        this.hexes.forEach((h,i) => {
-            h.draw(ctx, this.hex_scale);
-        });
+      Object.values(this.hexes).forEach((h) => {
+          h.draw(ctx, this.hex_scale);
+      });
 
-        this.units.forEach((u,i) => {
-          u.draw(ctx);
+      Object.values(this.mines).forEach((u) => {
+          u.draw(ctx, this.hex_scale);
       });
     }
 }
 
+
+class MapFeature {
+  constructor(x,y, icon="") {
+    this.x = y;
+    this.y = x;
+    this.iconURL = icon;
+    this.hidden = false;
+  }
+
+  draw(ctx, hex_scale) {
+    if(! this.hidden){
+      // only draw if the image is done loading
+      if(this.iconURL in images && images[this.iconURL]) {
+        const r = hex_scale;
+        const s_x = 1.5 * r * (this.x) + map.x_start_px;
+        const s_y = sqrtthree*r * (this.y + (this.x%2==1 ? 0.5 : 0.0)) + map.y_start_px;
+
+        let scale = 0.8 * r;
+        ctx.drawImage(images[this.iconURL], s_x-scale, s_y-scale, 2*scale, 2*scale);
+      }
+    }
+  }    
+}
 
 class Hex {
     constructor(x,y) {

@@ -4,6 +4,27 @@ var map_size = 5;
 var map = undefined;
 
 
+async function load_Image(url){
+    let ext = url.split('.').pop();
+    let img_exts = ["png", "gif"] // allowed image exstensions
+    if(img_exts.includes(ext)){
+        // load the image
+        let img=new Image();
+        img.onload=function(){
+            // and add it to dict of known images
+            images[url]=img;
+        };
+        img.src=url;
+    }
+}
+
+// load images assyncroniuosly
+var mineURL = "/static/mine.png";
+var flagURL = "/static/flag.png";
+load_Image(mineURL);
+load_Image(flagURL);
+
+
 function resize_canvas(){
     // resize the minefield_canvas
     const minefield_div_size = Math.min(window.innerHeight, window.innerWidth)
@@ -39,6 +60,21 @@ window.addEventListener('resize', (event) => {resize_canvas()}, true);
 async function generate(field_size) {
     map_size = field_size
     map = new Map(map_size, map_size, document.getElementById("minefield_canvas"));
+
+    let max_mines = Math.floor(0.4*map_size*map_size);
+    let n_mines = 0;
+    while (n_mines < max_mines) {
+        let m_x = Math.floor(Math.random() * map.width);
+        let m_y = Math.floor(Math.random() * map.height);
+
+        let key = `${m_x}_${m_y}`;
+        if(! (key in map.mines)){ // only add a mine if hex already doesn't have one
+            let mine = new MapFeature(m_x,m_y, mineURL);
+            map.mines[key] = mine;
+
+            n_mines += 1;
+        }
+    }
 
     // after done generating, set a flag to allow canvas drawing
     generated = true;
