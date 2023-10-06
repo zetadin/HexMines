@@ -106,27 +106,20 @@ class Hex {
       const s_x = 1.5 * r * (this.x) + map.x_start_px;
       const s_y = sqrtthree*r * (this.y + (this.x%2==1 ? 0.5 : 0.0)) + map.y_start_px;
       ctx.beginPath();
-      ctx.strokeStyle = this.border_color;
-      ctx.lineWidth = this.border_w;
       for (var i = 0; i < 6; i++) {
           ctx.lineTo(s_x + r * Math.cos(hextheta * i), s_y + r * Math.sin(hextheta * i));
       }
       ctx.closePath();
       ctx.fillStyle = this.color;
       ctx.fill();
-      // if(r>20){   // draw border
-        ctx.stroke();
-      // }
-      
-      // // draw center point
-      // ctx.fillStyle = this.border_color;
-      // ctx.fillRect(s_x-2,s_y-2,5,5);
+      ctx.strokeStyle = this.border_color;
+      ctx.lineWidth = this.border_w;
+      ctx.stroke();
 
-      // if(r>30){ // hide coordinates when zoomed out
-        ctx.fillStyle = "#000000";
-        ctx.textAlign = "center";
-        ctx.font = "12px sans";
-        ctx.fillText(`${this.x},${this.y}`, s_x, s_y+hex_scale*0.75);
-      // }
+      ctx.fillStyle = "#000000";
+      ctx.textAlign = "center";
+      ctx.font = "12px sans";
+      ctx.fillText(`${this.x},${this.y}`, s_x, s_y+hex_scale*0.75);
+      
     }    
 }

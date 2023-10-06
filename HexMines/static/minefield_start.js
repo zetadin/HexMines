@@ -30,7 +30,7 @@ function resize_canvas(){
     const minefield_div_size = Math.min(window.innerHeight, window.innerWidth)
     let minefield_div = document.getElementById("minefield_div");
     style = window.getComputedStyle(minefield_div);
-    let side_extra = 2*parseFloat(style['borderWidth']) + parseFloat(style['padding']) //want some white space around border
+    let side_extra = 2*parseFloat(style['borderWidth']) + parseFloat(style['padding']) // want some white space around border
     let canvas = document.getElementById("minefield_canvas");
     style = window.getComputedStyle(canvas);
     side_extra += parseFloat(style['borderWidth']);
@@ -93,12 +93,7 @@ function draw_canvas_grid(){
     let ctx = canvas.getContext('2d');
 
     // draw map
-    map.draw(ctx);
-
-    // // draw debug text
-    // ctx.font = "16px serif";
-    // ctx.strokeText("Debug text", 8, 16+1);
-    
+    map.draw(ctx);    
 }
 
 function strt(field_size) {
