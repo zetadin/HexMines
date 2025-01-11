@@ -31,6 +31,7 @@ class Map {
           }
           
         // this.recalc_scale();
+        this.detLine = new DetonationLine();
     }
 
     recalc_scale(){
@@ -65,6 +66,8 @@ class Map {
       Object.values(this.mines).forEach((u) => {
           u.draw(ctx, this.hex_scale);
       });
+
+      this.detLine.draw(ctx, this.hex_scale);
     }
 }
 
@@ -91,6 +94,23 @@ class MapFeature {
     }
   }    
 }
+
+
+class DetonationLine {
+  draw(ctx, hex_scale) {
+    const r = hex_scale;
+    const x = map.x_start_px-r;
+    const y = sqrtthree*r * (map.height - 0.5) + map.y_start_px;
+
+    ctx.strokeStyle = "rgb(255 0 0 / 70%)";
+    ctx.lineWidth = 5;
+    ctx.beginPath(); // Start a new path
+    ctx.moveTo(x, y); // Move the pen to start
+    ctx.lineTo(x+1.5 * r * map.width + 0.5*r, y); // Draw a line to end
+    ctx.stroke(); // Render the path
+  }
+}
+
 
 class Hex {
     constructor(x,y) {
