@@ -71,8 +71,8 @@ class Map {
 
 class MapFeature {
   constructor(x,y, icon="") {
-    this.x = y;
-    this.y = x;
+    this.x = x;
+    this.y = y;
     this.iconURL = icon;
     this.hidden = false;
   }

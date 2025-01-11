@@ -61,11 +61,11 @@ async function generate(field_size) {
     map_size = field_size
     map = new Map(map_size, map_size, document.getElementById("minefield_canvas"));
 
-    let max_mines = Math.floor(0.4*map_size*map_size);
+    let max_mines = Math.floor(0.2*map_size*map_size);
     let n_mines = 0;
     while (n_mines < max_mines) {
         let m_x = Math.floor(Math.random() * map.width);
-        let m_y = Math.floor(Math.random() * map.height);
+        let m_y = Math.floor(Math.random() * map.height/2);
 
         let key = `${m_x}_${m_y}`;
         if(! (key in map.mines)){ // only add a mine if hex already doesn't have one
