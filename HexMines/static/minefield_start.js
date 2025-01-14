@@ -19,8 +19,8 @@ async function load_Image(url){
 }
 
 // load images assyncroniuosly
-var mineURL = "/static/mine.png";
-var flagURL = "/static/flag.png";
+var mineURL = static_path+"/static/mine.png";
+var flagURL = static_path+"/static/flag.png";
 load_Image(mineURL);
 load_Image(flagURL);
 
