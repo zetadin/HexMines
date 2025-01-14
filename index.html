@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="HexMines/static/buttons.css" >
+    <link rel="shortcut icon" type="image/png" href="HexMines/static/favico.svg" >
+</head>
+<body>
+
+<div class="centered_horiz start_container" id="start_div">
+    <p class="start_txt" id="start_lbl"> Start a new Minefield </p>
+    <button class="button button_start" id="Start_5" onclick="strt(5)">5x5</button>
+    <button class="button button_start" id="Start_10" onclick="strt(10)">10x10</button>
+    <button class="button button_start" id="Start_15" onclick="strt(15)">15x15</button>
+    
+</div>
+
+
+
+
+<div class="centered minefield_container" id="minefield_div">
+
+    <canvas class="animated_canvas" id="minefield_canvas" width="2" height="2">
+    </canvas> 
+    
+</div>
+
+<script src="HexMines/static/map_classes.js"></script>
+<script src="HexMines/static/minefield_start.js"></script>
+
+
+</body>
+</html>
