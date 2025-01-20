@@ -16,7 +16,12 @@ class Map {
       this.hex_border_w = 1;
       // where to draw first hex in px
       this.x_start_px = this.hex_scale;               // a
-      this.y_start_px = 0.5*sqrtthree*this.hex_scale; // h
+      this.y_start_px_init = 0.5*sqrtthree*this.hex_scale; // h
+      this.y_start_px = this.y_start_px_init; // h
+
+      this.v_shift = 0;   // vertical shift in hex_scales
+      this.v_speed = 0.001; // hex_scale/sec, will change with time later
+
       if(init){ this.init(); }
     }
 
@@ -33,7 +38,7 @@ class Map {
           }
           
         // this.recalc_scale();
-        this.detLine = new DetonationLine();
+        this.detLine = new DetonationLine(this.hex_scale);
     }
 
     recalc_scale(){
@@ -60,15 +65,36 @@ class Map {
         this.y_start_px = shift_y + 0.5*sqrtthree*this.hex_scale; // h
     }
 
-    draw(ctx, dt) {
+    update(dt) {
+      // Map itself
+      this.v_shift += this.v_speed * dt;
+      this.y_start_px = this.y_start_px_init + this.v_shift*this.hex_scale;
 
+      // Detonation line
+      this.detLine.update(dt);
+
+      // Hexes
       Object.values(this.hexes).forEach((h) => {
           h.update(dt);
+      });
+
+      // Features
+      Object.values(this.mines).forEach((u) => {
+          u.update(dt);
+      });
+    }
+    
+
+    draw(ctx, dt) {
+      this.update(dt);
+
+      // Hexes
+      Object.values(this.hexes).forEach((h) => {
           h.draw(ctx, this.hex_scale);
       });
 
+      // Features
       Object.values(this.mines).forEach((u) => {
-          u.update(dt);
           u.draw(ctx, this.hex_scale);
       });
 
@@ -93,12 +119,11 @@ async function load_Image(url){
   }
 }
 
-var mineURL = static_path+"/static/mine.png";
-var flagURL = static_path+"/static/flag.png";
-
+// Preload all the MapFeature images
 var feature_icons = {
-    "Mine": mineURL,
-    "Flag": flagURL,
+    "Mine": static_path+"/static/mine.png",
+    "Boom": static_path+"/static/favico.png",
+    "Flag": static_path+"/static/flag.png",
     "None": "",
 }
 for (const key in feature_icons) {
@@ -135,21 +160,26 @@ class MapFeature {
 
   update(dt) {
     // TODO: if mine and below Triger line -> detonate
+
   }
 }
 
 
 class DetonationLine {
+  update(dt) {
+    this.y = sqrtthree*map.hex_scale * (map.height - 0.5) + this.y_start_px_init;
+  }
+
   draw(ctx, hex_scale) {
     const r = hex_scale;
     const x = map.x_start_px-r;
-    const y = sqrtthree*r * (map.height - 0.5) + map.y_start_px;
+    // this.y = sqrtthree*r * (map.height - 0.5) + this.y_start_px_init;
 
     ctx.strokeStyle = "rgb(255 0 0 / 70%)";
     ctx.lineWidth = 5;
     ctx.beginPath(); // Start a new path
-    ctx.moveTo(x, y); // Move the pen to start
-    ctx.lineTo(x+1.5 * r * map.width + 0.5*r, y); // Draw a line to end
+    ctx.moveTo(x, this.y); // Move the pen to start
+    ctx.lineTo(x+1.5 * r * map.width + 0.5*r, this.y); // Draw a line to end
     ctx.stroke(); // Render the path
   }
 }
@@ -196,12 +226,12 @@ class Hex {
         // calculate hex's num_neigh_mines
         this.num_neigh_mines = 0;
         for (const key in this.neighbour_dict) {
-            console.log(key, this.neighbour_dict[key], mines[this.neighbour_dict[key]]);
+            // console.log(key, this.neighbour_dict[key], mines[this.neighbour_dict[key]]);
             if(mines[this.neighbour_dict[key]]){
                 this.num_neigh_mines += 1;
             }
         }
-        console.log(this.num_neigh_mines);
+        // console.log(this.num_neigh_mines);
     }
 
     update(dt){

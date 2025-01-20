@@ -20,6 +20,10 @@
     /* margin-bottom: 5px; */
     transition: transform .5s;
 }
+.init_hidden {
+    opacity: 0.0;
+    transition: transform .5s;
+}
 
 .centered {
     position: absolute;
