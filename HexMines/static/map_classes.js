@@ -138,8 +138,54 @@ class Hex {
 
       ctx.fillStyle = "#000000";
       ctx.textAlign = "center";
+      ctx.textBaseline = 'middle';
       ctx.font = "12px sans";
       ctx.fillText(`${this.x},${this.y}`, s_x, s_y+hex_scale*0.75);
       
     }    
+}
+
+
+
+/////////////////////////////////////////////////////////
+////////////////Rendering Loop///////////////////////////
+/////////////////////////////////////////////////////////
+
+var FPS_counter=0;
+var FPS_text="FPS: ?";
+var lastFPSReset = Date.now();
+
+function update(){
+  // get context
+  let canvas = document.getElementById("minefield_canvas");
+  var ctx = canvas.getContext('2d');
+
+  // clear screen
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // draw map
+  map.draw(ctx);
+
+  // calculate FPS readout, averaged over 500ms
+  FPS_counter++;
+  var now = Date.now();
+  if(lastFPSReset+500 <= now){
+      let fps = FPS_counter*1000.0/(now - lastFPSReset);
+      FPS_text=`FPS: ${Math.round(fps)}`;
+      FPS_counter = 0;
+      lastFPSReset = now;
+  }
+  
+  // draw FPS readout
+  ctx.strokeStyle = "#000000";
+  ctx.lineWidth = 1;
+  ctx.font = "20px sans";
+  ctx.textAlign = "end";
+  ctx.textBaseline = 'top';
+  ctx.strokeText(FPS_text, canvas.width-1, 0);
+
+  // schedule the next update at next frame redraw.
+  // operates at screen refresh rate with no throttling.
+  // not technically recursive, just a one-time callback not on stack.
+  requestAnimationFrame(update);
 }

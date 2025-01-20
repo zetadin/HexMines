@@ -40,9 +40,6 @@ function resize_canvas(){
 
     if(typeof map !== 'undefined'){
         map.recalc_scale();
-        if(generated){
-            draw_canvas_grid(); // redraw canvas, because resizing wipes it
-        }
     }
     else{ // retry scaling after map is instantiated
         setTimeout(() => {
@@ -87,13 +84,10 @@ function draw_canvas_grid(){
         }, 50);
         return;
     }
-
     // can continue
-    let canvas = document.getElementById("minefield_canvas");
-    let ctx = canvas.getContext('2d');
 
     // draw map
-    map.draw(ctx);    
+    update();
 }
 
 function strt(field_size) {
@@ -124,17 +118,13 @@ function strt(field_size) {
     // resize the minefield_canvas
     resize_canvas()
 
-    // register listener to draw the canvas after fade in
-    minefield_div.addEventListener("transitionend", () => {
-        draw_canvas_grid();
-      });
-
     // show the minefield_div (fade in via opacity)
     minefield_div.style.display="block";
     setTimeout(() => {
         minefield_div.style.opacity=1;
     }, this.animationDelay + 20);
 
+    draw_canvas_grid()
 
     
 }
