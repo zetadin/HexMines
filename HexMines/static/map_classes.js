@@ -27,8 +27,12 @@ class Map {
                 hex.color = "#c0c0c0"; //light grey
                 hex.border_w = this.hex_border_w;
                 this.hexes[`${x}_${y}`] = hex;
-              } 
+              }
           }
+
+        //TODO: find each Hex's neighbours
+
+        //TODO: calculate num_neigh_mines
           
         // this.recalc_scale();
         this.detLine = new DetonationLine();
@@ -116,9 +120,10 @@ class Hex {
     constructor(x,y) {
       this.x = y;
       this.y = x;
-      this.color = "#FAFAFA"
-      this.border_w = 1
-      this.border_color = "#000000" //"#A0A0A0"
+      this.color = "#FAFAFA";
+      this.border_w = 1;
+      this.border_color = "#000000"; //"#A0A0A0"
+      this.num_neigh_mines=0;
     }
 
     draw(ctx, hex_scale) {
@@ -141,6 +146,13 @@ class Hex {
       ctx.textBaseline = 'middle';
       ctx.font = "12px sans";
       ctx.fillText(`${this.x},${this.y}`, s_x, s_y+hex_scale*0.75);
+
+      if(this.num_neigh_mines>0){
+        ctx.font = "28px sans";
+        ctx.fillStyle = "#303030";
+        ctx.fillText(`${this.neighbours}`, s_x, s_y);
+      }
+
       
     }    
 }
