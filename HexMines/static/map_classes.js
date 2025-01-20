@@ -26,13 +26,11 @@ class Map {
                 var hex = new Hex(x,y);
                 hex.color = "#c0c0c0"; //light grey
                 hex.border_w = this.hex_border_w;
+
+                // add this hex to the map
                 this.hexes[`${x}_${y}`] = hex;
               }
           }
-
-        //TODO: find each Hex's neighbours
-
-        //TODO: calculate num_neigh_mines
           
         // this.recalc_scale();
         this.detLine = new DetonationLine();
@@ -62,12 +60,15 @@ class Map {
         this.y_start_px = shift_y + 0.5*sqrtthree*this.hex_scale; // h
     }
 
-    draw(ctx) {
+    draw(ctx, dt) {
+
       Object.values(this.hexes).forEach((h) => {
+          h.update(dt);
           h.draw(ctx, this.hex_scale);
       });
 
       Object.values(this.mines).forEach((u) => {
+          u.update(dt);
           u.draw(ctx, this.hex_scale);
       });
 
@@ -76,12 +77,46 @@ class Map {
 }
 
 
+
+// load images assyncroniuosly
+async function load_Image(url){
+  let ext = url.split('.').pop();
+  let img_exts = ["png", "gif"] // allowed image exstensions
+  if(img_exts.includes(ext)){
+      // load the image
+      let img=new Image();
+      img.onload=function(){
+          // and add it to dict of known images
+          images[url]=img;
+      };
+      img.src=url;
+  }
+}
+
+var mineURL = static_path+"/static/mine.png";
+var flagURL = static_path+"/static/flag.png";
+
+var feature_icons = {
+    "Mine": mineURL,
+    "Flag": flagURL,
+    "None": "",
+}
+for (const key in feature_icons) {
+    load_Image(feature_icons[key]);
+}
+
 class MapFeature {
-  constructor(x,y, icon="") {
+  constructor(x,y, type="None") {
     this.x = x;
     this.y = y;
-    this.iconURL = icon;
     this.hidden = false;
+    this.type = type;
+    if(!(type in feature_icons)) { //unrecognized type requested
+      console.log("Unknown MapFeature type (", type,") @ ",x,",",y);
+    }
+    else {
+      this.iconURL = feature_icons[type];
+    }
   }
 
   draw(ctx, hex_scale) {
@@ -96,7 +131,11 @@ class MapFeature {
         ctx.drawImage(images[this.iconURL], s_x-scale, s_y-scale, 2*scale, 2*scale);
       }
     }
-  }    
+  }
+
+  update(dt) {
+    // TODO: if mine and below Triger line -> detonate
+  }
 }
 
 
@@ -118,12 +157,57 @@ class DetonationLine {
 
 class Hex {
     constructor(x,y) {
-      this.x = y;
-      this.y = x;
+      this.x = x;
+      this.y = y;
       this.color = "#FAFAFA";
       this.border_w = 1;
       this.border_color = "#000000"; //"#A0A0A0"
-      this.num_neigh_mines=0;
+      this.num_neigh_mines=-1;
+
+      // find each Hex's neighbours
+      this.neighbour_dict = [];
+
+      // N
+      let next_key = String(x)+"_"+String(y-1);
+      this.neighbour_dict["N"] = next_key;
+
+      // NE
+      next_key = String(x+1)+"_"+String(y+(x%2==0 ? -1 : 0));
+      this.neighbour_dict["NE"] = next_key;
+
+      // SE
+      next_key = String(x+1)+"_"+String(y+(x%2==0 ? 0 : 1));
+      this.neighbour_dict["SE"] = next_key;
+
+      // S
+      next_key = String(x)+"_"+String(y+1);
+      this.neighbour_dict["S"] = next_key;
+
+      // SW
+      next_key = String(x-1)+"_"+String(y+(x%2==0 ? 0 : 1));
+      this.neighbour_dict["SW"] = next_key;
+
+      // NW
+      next_key = String(x-1)+"_"+String(y+(x%2==0 ? -1 : 0));
+      this.neighbour_dict["NW"] = next_key;
+    }
+
+    calc_neigh_mines(mines){
+        // calculate hex's num_neigh_mines
+        this.num_neigh_mines = 0;
+        for (const key in this.neighbour_dict) {
+            console.log(key, this.neighbour_dict[key], mines[this.neighbour_dict[key]]);
+            if(mines[this.neighbour_dict[key]]){
+                this.num_neigh_mines += 1;
+            }
+        }
+        console.log(this.num_neigh_mines);
+    }
+
+    update(dt){
+      if(this.num_neigh_mines<0 && generated){
+        this.calc_neigh_mines(map.mines);
+      }
     }
 
     draw(ctx, hex_scale) {
@@ -148,12 +232,10 @@ class Hex {
       ctx.fillText(`${this.x},${this.y}`, s_x, s_y+hex_scale*0.75);
 
       if(this.num_neigh_mines>0){
-        ctx.font = "28px sans";
+        ctx.font = "30px sans";
         ctx.fillStyle = "#303030";
-        ctx.fillText(`${this.neighbours}`, s_x, s_y);
+        ctx.fillText(`${this.num_neigh_mines}`, s_x, s_y);
       }
-
-      
     }    
 }
 
@@ -166,8 +248,14 @@ class Hex {
 var FPS_counter=0;
 var FPS_text="FPS: ?";
 var lastFPSReset = Date.now();
+var lastUpdate = Date.now();
 
 function update(){
+  // find time between updates
+  var frameStart = Date.now();
+  var dt = frameStart - lastUpdate;
+  lastUpdate = frameStart;
+
   // get context
   let canvas = document.getElementById("minefield_canvas");
   var ctx = canvas.getContext('2d');
@@ -176,7 +264,7 @@ function update(){
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   // draw map
-  map.draw(ctx);
+  map.draw(ctx, dt);
 
   // calculate FPS readout, averaged over 500ms
   FPS_counter++;
@@ -199,5 +287,6 @@ function update(){
   // schedule the next update at next frame redraw.
   // operates at screen refresh rate with no throttling.
   // not technically recursive, just a one-time callback not on stack.
+
   requestAnimationFrame(update);
 }

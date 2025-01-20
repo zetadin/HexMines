@@ -4,27 +4,6 @@ var map_size = 5;
 var map = undefined;
 
 
-async function load_Image(url){
-    let ext = url.split('.').pop();
-    let img_exts = ["png", "gif"] // allowed image exstensions
-    if(img_exts.includes(ext)){
-        // load the image
-        let img=new Image();
-        img.onload=function(){
-            // and add it to dict of known images
-            images[url]=img;
-        };
-        img.src=url;
-    }
-}
-
-// load images assyncroniuosly
-var mineURL = static_path+"/static/mine.png";
-var flagURL = static_path+"/static/flag.png";
-load_Image(mineURL);
-load_Image(flagURL);
-
-
 function resize_canvas(){
     // resize the minefield_canvas
     const minefield_div_size = Math.min(window.innerHeight, window.innerWidth)
@@ -66,9 +45,8 @@ async function generate(field_size) {
 
         let key = `${m_x}_${m_y}`;
         if(! (key in map.mines)){ // only add a mine if hex already doesn't have one
-            let mine = new MapFeature(m_x,m_y, mineURL);
+            let mine = new MapFeature(m_x,m_y, "Mine");
             map.mines[key] = mine;
-
             n_mines += 1;
         }
     }
@@ -83,8 +61,7 @@ function draw_canvas_grid(){
             draw_canvas_grid();
         }, 50);
         return;
-    }
-    // can continue
+    } // can now continue
 
     // draw map
     update();
