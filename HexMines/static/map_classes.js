@@ -19,6 +19,7 @@ class Map {
       this.y_start_px_init = 0.5*sqrtthree*this.hex_scale; // h
       this.y_start_px = this.y_start_px_init; // h
 
+      this.playing = false;
       this.v_shift = 0;   // vertical shift in hex_scales
       this.v_speed = 0.001; // hex_scale/sec, will change with time later
 
@@ -67,8 +68,10 @@ class Map {
 
     update(dt) {
       // Map itself
-      this.v_shift += this.v_speed * dt;
-      this.y_start_px = this.y_start_px_init + this.v_shift*this.hex_scale;
+      if(this.playing){
+        this.v_shift += this.v_speed * dt;
+        this.y_start_px = this.y_start_px_init + this.v_shift*this.hex_scale;
+      }
 
       // Detonation line
       this.detLine.update(dt);

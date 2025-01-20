@@ -13,17 +13,20 @@
     <button class="button button_start" id="Start_5" onclick="strt(5)">5x5</button>
     <button class="button button_start" id="Start_10" onclick="strt(10)">10x10</button>
     <button class="button button_start" id="Start_15" onclick="strt(15)">15x15</button>
-    
 </div>
-
 
 
 
 <div class="centered minefield_container" id="minefield_div">
 
     <canvas class="animated_canvas" id="minefield_canvas" width="2" height="2">
-    </canvas> 
-    
+    </canvas>     
+</div>
+
+
+<!--Draw Play button on top of the canvas-->
+<div class="centered start_container init_hidden" id="play_div">
+    <button class="button button_play button_diasbled" id="play_but" onclick="play()" disabled>Play</button>
 </div>
 
 <script src="HexMines/static/map_classes.js"></script>

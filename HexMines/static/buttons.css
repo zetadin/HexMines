@@ -20,10 +20,6 @@
     /* margin-bottom: 5px; */
     transition: transform .5s;
 }
-.init_hidden {
-    opacity: 0.0;
-    transition: transform .5s;
-}
 
 .centered {
     position: absolute;
@@ -49,6 +45,16 @@
     border:3px solid #aec987;
 }
 
+.init_hidden {
+    opacity: 0.0;
+    transition: transform .5s;
+}
+
+.button_diasbled {
+    pointer-events: none;
+    cursor: not-allowed;
+}
+
 .button_light_grey {background-color: #e7e7e7; color:black}
 
 .button {
@@ -72,6 +78,17 @@
     padding: 8px 8px;
     margin: 8px 8px;
     border-radius: 8px;
+}
+
+.button_play {
+    opacity: 1;
+    background-color: #0B5C11;
+    color:white;
+    font-size: min(clamp(30px, 9vw, 113px), max(30px, 4.5vh));
+    padding: 12px 12px;
+    padding: 12px 12px;
+    border-radius: 12px;
+    margin: 15px;
 }
 
 .button_greyed_out {

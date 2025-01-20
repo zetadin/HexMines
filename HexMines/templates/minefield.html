@@ -4,7 +4,7 @@
     {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static 'buttons.css' %}">
     <link rel="shortcut icon" type="image/png" href="{% static 'favico.svg' %}" >
-    <script> var static_path="/HexMines" </script>
+    <script> var static_path="" </script>
 
 </head>
 
@@ -25,7 +25,11 @@
 
     <canvas class="animated_canvas" id="minefield_canvas" width="2" height="2">
     </canvas> 
-    
+</div>
+
+<!--Draw Play button on top of the canvas-->
+<div class="centered start_container init_hidden" id="play_div">
+    <button class="button button_play button_diasbled" id="play_but" onclick="play()" disabled>Play</button>
 </div>
 
 <script src={% static 'map_classes.js' %}></script>

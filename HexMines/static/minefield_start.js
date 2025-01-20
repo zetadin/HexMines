@@ -103,5 +103,29 @@ function strt(field_size) {
 
     draw_canvas_grid()
 
-    
+    // Show the play_div
+    let play_div = document.getElementById("play_div");
+    play_div.style.opacity = 1.0;
+    let play_but = document.getElementById("play_but");
+    play_but.disabled = false;
+    play_but.style.pointerEvents = "auto";
+    play_but.style.cursor = "pointer";
+}
+
+function play(){
+    if(!generated){ // retry after 50 ms
+        setTimeout(() => {
+            play();
+        }, 50);
+        return;
+    }
+
+    // start lowering the playing field
+    map.playing=true;
+
+    // hide the play_div by making it transparent
+    let play_div = document.getElementById("play_div");
+    play_div.style.opacity = 0.0;
+    let play_but = document.getElementById("play_but");
+    play_but.disabled = true;
 }
