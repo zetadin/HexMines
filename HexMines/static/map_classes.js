@@ -42,6 +42,15 @@ class Map {
         this.detLine = new DetonationLine(this.hex_scale);
     }
 
+    gen_row(){
+      // TODO: generate one more row of mines at the top of the map
+    }
+
+    rem_row(){
+      // TODO: remove the bottom row of mines at the bottom of the map
+    }
+
+
     recalc_scale(){
         // horizontally, 1 hex is 2a; 2 hexes are 2a + 1.5a
         let horiz_a = (this.canvas.width-2*this.hex_border_w)/(0.5 + 1.5*this.width);
@@ -63,7 +72,8 @@ class Map {
         let shift_y = 0.5*(this.canvas.height - grid_h);
 
         this.x_start_px = shift_x + this.hex_scale;               // a
-        this.y_start_px = shift_y + 0.5*sqrtthree*this.hex_scale; // h
+        this.y_start_px_init = shift_y + 0.5*sqrtthree*this.hex_scale; // h
+        this.y_start_px = this.y_start_px_init + this.v_shift*this.hex_scale;
     }
 
     update(dt) {
@@ -72,6 +82,10 @@ class Map {
         this.v_shift += this.v_speed * dt;
         this.y_start_px = this.y_start_px_init + this.v_shift*this.hex_scale;
       }
+
+      // TODO: logic to remove and generate rows
+      this.gen_row();
+      this.rem_row();
 
       // Detonation line
       this.detLine.update(dt);

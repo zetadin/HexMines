@@ -128,4 +128,6 @@ function play(){
     play_div.style.opacity = 0.0;
     let play_but = document.getElementById("play_but");
     play_but.disabled = true;
+    play_but.style.pointerEvents = "none";
+    play_but.style.cursor = "none";
 }

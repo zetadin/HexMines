@@ -82,7 +82,7 @@
 
 .button_play {
     opacity: 1;
-    background-color: #0B5C11;
+    background-color: #538C57;
     color:white;
     font-size: min(clamp(30px, 9vw, 113px), max(30px, 4.5vh));
     padding: 12px 12px;
