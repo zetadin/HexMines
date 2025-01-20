@@ -177,6 +177,13 @@ class MapFeature {
 
   update(dt) {
     // TODO: if mine and below Triger line -> detonate
+    let s_y = sqrtthree*map.hex_scale * (this.y + (this.x%2==1 ? 0.5 : 0.0)) + map.y_start_px;
+    if(s_y > map.detLine.y){
+      // Game Over
+      map.playing = false;
+      this.type = "Boom";
+      this.iconURL = feature_icons[this.type];
+    }
 
   }
 }
@@ -184,7 +191,7 @@ class MapFeature {
 
 class DetonationLine {
   update(dt) {
-    this.y = sqrtthree*map.hex_scale * (map.height - 0.5) + this.y_start_px_init;
+    this.y = sqrtthree*map.hex_scale * (map.height - 0.5) + map.y_start_px_init;
   }
 
   draw(ctx, hex_scale) {
@@ -201,6 +208,16 @@ class DetonationLine {
   }
 }
 
+
+var number_colors=[
+  "#000000", // 0
+  "#303030", // 1
+  "#0b6623", // 2
+  "#4682b4", // 3
+  "#4b0082", // 4
+  "#d67229", // 5
+  "#ff3030", // 6
+]
 
 class Hex {
     constructor(x,y) {
@@ -242,13 +259,20 @@ class Hex {
     calc_neigh_mines(mines){
         // calculate hex's num_neigh_mines
         this.num_neigh_mines = 0;
-        for (const key in this.neighbour_dict) {
-            // console.log(key, this.neighbour_dict[key], mines[this.neighbour_dict[key]]);
-            if(mines[this.neighbour_dict[key]]){
-                this.num_neigh_mines += 1;
-            }
+        
+        let my_key = String(this.x)+"_"+String(this.y);
+        if(mines[my_key]){
+            this.num_neigh_mines = 0;
         }
-        // console.log(this.num_neigh_mines);
+        else{
+          // no mine here
+          for (const key in this.neighbour_dict) {
+              // console.log(key, this.neighbour_dict[key], mines[this.neighbour_dict[key]]);
+              if(mines[this.neighbour_dict[key]]){
+                  this.num_neigh_mines += 1;
+              }
+          }
+        }
     }
 
     update(dt){
@@ -279,8 +303,9 @@ class Hex {
       ctx.fillText(`${this.x},${this.y}`, s_x, s_y+hex_scale*0.75);
 
       if(this.num_neigh_mines>0){
-        ctx.font = "30px sans";
-        ctx.fillStyle = "#303030";
+        ctx.font = `${Math.round(hex_scale*1.4)}px Verdana`;
+        // ctx.fillStyle = "#303030";
+        ctx.fillStyle = number_colors[this.num_neigh_mines];
         ctx.fillText(`${this.num_neigh_mines}`, s_x, s_y);
       }
     }    
