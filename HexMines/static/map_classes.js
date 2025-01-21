@@ -342,7 +342,7 @@ class Hex {
           ctx.lineTo(s_x + r * Math.cos(hextheta * i), s_y + r * Math.sin(hextheta * i));
       }
       ctx.closePath();
-      ctx.fillStyle = hex_color[Int(this.revealed)];
+      ctx.fillStyle = hex_color[this.revealed | 0];
       ctx.fill();
       ctx.strokeStyle = this.border_color;
       ctx.lineWidth = this.border_w;
