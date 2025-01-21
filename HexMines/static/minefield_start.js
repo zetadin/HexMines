@@ -110,6 +110,9 @@ function strt(field_size) {
     play_but.disabled = false;
     play_but.style.pointerEvents = "auto";
     play_but.style.cursor = "pointer";
+
+    // Add click detection
+    canvas.addEventListener('click', map.onClick, false);
 }
 
 function play(){
