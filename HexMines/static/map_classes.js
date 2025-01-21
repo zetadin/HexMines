@@ -126,9 +126,8 @@ class Map {
         // start  of the relative axes for click detection is at center of hex 0,0 - (a,h) in x and y
         const rel_start_x = - a;
         const rel_start_y = -a * this.v_shift - h;
-
-        let canvas = document.getElementById('minefield_canvas');
-        var rect = canvas.getBoundingClientRect();
+        
+        var rect = this.canvas.getBoundingClientRect();
         console.log(rect.top, rect.right, rect.bottom, rect.left);
         
     
