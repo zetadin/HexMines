@@ -112,6 +112,7 @@ function strt(field_size) {
     play_but.style.cursor = "pointer";
 
     // Add click detection
+    let canvas = document.getElementById("minefield_canvas");
     canvas.addEventListener('click', map.onClick, false);
 }
 
