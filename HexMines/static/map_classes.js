@@ -127,7 +127,7 @@ class Map {
         const rel_start_x = - a;
         const rel_start_y = -a * this.v_shift - h;
 
-        let canvas = document.getElementById('yourElId');
+        let canvas = document.getElementById('minefield_canvas');
         var rect = canvas.getBoundingClientRect();
         console.log(rect.top, rect.right, rect.bottom, rect.left);
         
