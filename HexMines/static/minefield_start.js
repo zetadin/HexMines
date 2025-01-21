@@ -106,6 +106,7 @@ function strt(field_size) {
     // Show the play_div
     let play_div = document.getElementById("play_div");
     play_div.style.opacity = 1.0;
+    play_div.style.pointerEvents = "auto";
     let play_but = document.getElementById("play_but");
     play_but.disabled = false;
     play_but.style.pointerEvents = "auto";
@@ -130,6 +131,7 @@ function play(){
     // hide the play_div by making it transparent
     let play_div = document.getElementById("play_div");
     play_div.style.opacity = 0.0;
+    play_div.style.pointerEvents = "none";
     let play_but = document.getElementById("play_but");
     play_but.disabled = true;
     play_but.style.pointerEvents = "none";

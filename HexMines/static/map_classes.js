@@ -3,6 +3,9 @@ const hextheta = 2 * Math.PI / 6;
 
 var images = {}
 
+// fmod function from https://gist.github.com/wteuber/6241786
+Math.fmod = function (a,b) { return Number((a - (Math.floor(a / b) * b)).toPrecision(8)); };
+
 
 class Map {
     constructor(height, width, containing_canvas, init=true) {
@@ -118,24 +121,30 @@ class Map {
       this.detLine.draw(ctx, this.hex_scale);
     }
 
-    onClick(evt){
-        console.log("map.onClick(evt): evt=", evt)
-        //LMB down
-        const a = this.hex_scale;
+    onClick(evt){ // LMB down
+        // onClick is called as an event listener,
+        // so "this" is not the map!
+
+        // skip if haven't started game or game is over
+        if(map.playing==false){ return; }
+        
+        // console.log("map.onClick(evt): evt=", evt)
+
+        const a = map.hex_scale;
         const h = 0.5*a*sqrtthree;
     
-        // start  of the relative axes for click detection is at center of hex 0,0 - (a,h) in x and y
-        const rel_start_x = - a;
-        const rel_start_y = -a * this.v_shift - h;
-        // TODO: read actual borders from canvas
-        const border_left = 3; // px
-        const border_top = 3; // px
-
-        var rect = this.canvas.getBoundingClientRect();
-        console.log(rect.top, rect.right, rect.bottom, rect.left);
+        // start  of the relative axes for click detection
+        const rel_start_x = map.x_start_px - a;
+        const rel_start_y = a * map.v_shift;
+        // read actual borders from canvas
+        const style = getComputedStyle(map.canvas);
+        const border_left = style.borderLeftWidth.slice(0, -2); // px
+        const border_top = style.borderTopWidth.slice(0, -2); // px
+        var rect = map.canvas.getBoundingClientRect();
         
     
-        const [rel_x, rel_y] = [evt.pageX - rect.left - rel_start_x, evt.pageY - rect.top - rel_start_y];
+        const [rel_x, rel_y] = [evt.pageX - rect.left - border_left - rel_start_x,
+                                evt.pageY - rect.top - border_top - rel_start_y];
         const tx = Math.floor(rel_x / (1.5*a));
         const remx = Math.fmod(rel_x, (1.5*a));
         const ty = Math.floor((rel_y - (tx%2==1 ? h : 0)) / (2*h)); // move odd columns down by half a hex
@@ -154,19 +163,19 @@ class Map {
             }
         }
         
-        console.log("click @ hex ", mx, my, "\ttemp:", tx, ty, "\tpixels:", evt.pageX, evt.pageY, "\trem:", remx, remy, "\ta:",a,"\th",h);
+        // console.log("click @ hex ", mx, my, "\ttemp:", tx, ty, "\tpixels:", evt.pageX, evt.pageY, "\trel:", rel_x, rel_y, "\ta:",a,"\th",h);
         let key = `${mx}_${my}`;
         
-        // TODO: handle right-click to place flag too
-        
         // Toggle reveal of clicked hex
-        if(key in this.hexes){
-            this.hexes[key].revealed = ! this.hexes[key].revealed;
+        if(key in map.hexes){
+            map.hexes[key].revealed = ! map.hexes[key].revealed;
         }
 
-        // TODO: Check for mines here
+        // TODO: Check for mines in this hex
 
-        // Cascade reeal neighbours
+        // TODO: Cascade reveal neighbours
+
+        // TODO: handle RMB to place flag too
     }
 }
 
@@ -270,7 +279,7 @@ var number_colors=[
   "#ff3030", // 6
 ]
 
-var hex_color=["#FAFAFA", "#606060"]
+var hex_color=["#707070", "#F0F0F0"]
 
 
 class Hex {
