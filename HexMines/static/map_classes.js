@@ -117,6 +117,42 @@ class Map {
 
       this.detLine.draw(ctx, this.hex_scale);
     }
+
+    onClick(evt){
+        //LMB down
+        const a = this.hex_scale;
+        const h = 0.5*a*sqrtthree;
+    
+        // start  of the relative axes for click detection is at center of hex 0,0 - (a,h) in x and y
+        const rel_start_x = - a;
+        const rel_start_y = -a * this.v_shift - h;
+
+        let canvas = document.getElementById('yourElId');
+        var rect = canvas.getBoundingClientRect();
+        console.log(rect.top, rect.right, rect.bottom, rect.left);
+        
+    
+        const [rel_x, rel_y] = [evt.pageX - rect.left - rel_start_x, evt.pageY - rect.top - rel_start_y];
+        const tx = Math.floor(rel_x / (1.5*a));
+        const remx = Math.fmod(rel_x, (1.5*a));
+        const ty = Math.floor((rel_y - (tx%2==1 ? h : 0)) / (2*h)); // move odd columns down by half a hex
+        const remy = Math.fmod(rel_y - (tx%2==1 ? h : 0), (2*h));
+    
+        let [mx, my] = [tx, ty]; // default values that get overwritten if wea re actually in a neighbouring hex
+        if(remx<0.5*a){   // if we are left of here, we might be in hexes to the left,
+                          // depending which side of edges we are on
+            if(remy<h-remx*2*h/a) { // check above /
+                mx = tx - 1;
+                my = (tx%2==1) ? ty : ty-1; // reduce hex y index if we are in an even column an going left & up.
+            }
+            else if(remy>h+remx*2*h/a) { // check below \
+                mx = tx - 1;
+                my = (tx%2==1) ? ty+1 : ty; // increade hex y index if we are in an odd column an going left & down.
+            }
+        }
+        
+        console.log("click @ hex ", mx, my, "\ttemp:", tx, ty, "\tpixels:", evt.pageX, evt.pageY, "\trem:", remx, remy, "\ta:",a,"\th",h);
+    }
 }
 
 
