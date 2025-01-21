@@ -119,6 +119,7 @@ class Map {
     }
 
     onClick(evt){
+        onsole.log("map.onClick(evt): evt=", evt)
         //LMB down
         const a = this.hex_scale;
         const h = 0.5*a*sqrtthree;
@@ -126,7 +127,11 @@ class Map {
         // start  of the relative axes for click detection is at center of hex 0,0 - (a,h) in x and y
         const rel_start_x = - a;
         const rel_start_y = -a * this.v_shift - h;
-        
+        // TODO: read actual borders from canvas
+        const border_left = 3; // px
+        const border_top = 3; // px
+
+        console.log("Before using this.canvas")
         var rect = this.canvas.getBoundingClientRect();
         console.log(rect.top, rect.right, rect.bottom, rect.left);
         
