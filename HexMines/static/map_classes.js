@@ -119,7 +119,7 @@ class Map {
     }
 
     onClick(evt){
-        onsole.log("map.onClick(evt): evt=", evt)
+        console.log("map.onClick(evt): evt=", evt)
         //LMB down
         const a = this.hex_scale;
         const h = 0.5*a*sqrtthree;
@@ -131,7 +131,6 @@ class Map {
         const border_left = 3; // px
         const border_top = 3; // px
 
-        console.log("Before using this.canvas")
         var rect = this.canvas.getBoundingClientRect();
         console.log(rect.top, rect.right, rect.bottom, rect.left);
         
