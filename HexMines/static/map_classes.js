@@ -152,6 +152,18 @@ class Map {
         }
         
         console.log("click @ hex ", mx, my, "\ttemp:", tx, ty, "\tpixels:", evt.pageX, evt.pageY, "\trem:", remx, remy, "\ta:",a,"\th",h);
+        let key = `${mx}_${my}`;
+        
+        // TODO: handle right-click to place flag too
+        
+        // Toggle reveal of clicked hex
+        if(key in this.hexes){
+            this.hexes[key].revealed = ! this.hexes[key].revealed;
+        }
+
+        // TODO: Check for mines here
+
+        // Cascade reeal neighbours
     }
 }
 
@@ -255,11 +267,15 @@ var number_colors=[
   "#ff3030", // 6
 ]
 
+var hex_color=["#FAFAFA", "#606060"]
+
+
 class Hex {
     constructor(x,y) {
       this.x = x;
       this.y = y;
-      this.color = "#FAFAFA";
+      // this.color = "#FAFAFA";
+      this.revealed = false;
       this.border_w = 1;
       this.border_color = "#000000"; //"#A0A0A0"
       this.num_neigh_mines=-1;
@@ -326,7 +342,7 @@ class Hex {
           ctx.lineTo(s_x + r * Math.cos(hextheta * i), s_y + r * Math.sin(hextheta * i));
       }
       ctx.closePath();
-      ctx.fillStyle = this.color;
+      ctx.fillStyle = hex_color[Int(this.revealed)];
       ctx.fill();
       ctx.strokeStyle = this.border_color;
       ctx.lineWidth = this.border_w;
