@@ -1,3 +1,7 @@
+// Copyright Yuriy Khalak, 2025
+// Part of HexMines.
+// Released under CC BY-NC-SA: https://creativecommons.org/licenses/by-nc-sa/4.0/
+
 const sqrtthree = Math.sqrt(3.0);
 const hextheta = 2 * Math.PI / 6;
 
@@ -161,9 +165,6 @@ class Map {
       else{
         evt = e;
       }
-
-      // skip if haven't started game or game is over
-      if(map.playing==false){ return; }
       
       const a = map.hex_scale;
       const h = 0.5*a*sqrtthree;
@@ -207,6 +208,9 @@ class Map {
     onClick(e){ // LMB down
         // onClick is called as an event listener,
         // so "this" is not the map!
+
+        // skip if haven't started game or game is over
+        if(map.playing==false){ return; }
         
         let [mx, my] = map.findHexFromPointerEvent(e);
         let key = `${mx}_${my}`;
@@ -230,6 +234,9 @@ class Map {
     onRMB(e){ // RMB down / long click / double tap
       // onRMB is called as an event listener,
       // so "this" is not the map!
+      
+      // skip if haven't started game or game is over
+      if(map.playing==false){ return; }
 
       let [mx, my] = map.findHexFromPointerEvent(e);
       let key = `${mx}_${my}`;

@@ -1,3 +1,6 @@
+// Copyright Yuriy Khalak, 2025
+// Part of HexMines.
+// Released under CC BY-NC-SA: https://creativecommons.org/licenses/by-nc-sa/4.0/
 
 var generated = false;
 var map_size = 5;
@@ -6,7 +9,8 @@ var map = undefined;
 
 function resize_canvas(){
     // resize the minefield_canvas
-    const minefield_div_size = Math.min(window.innerHeight, window.innerWidth)
+    const licence_height = getComputedStyle(document.getElementById("license_div")).height.slice(0, -2);
+    const minefield_div_size = Math.min(window.innerHeight - licence_height, window.innerWidth)
     let minefield_div = document.getElementById("minefield_div");
     style = window.getComputedStyle(minefield_div);
     let side_extra = 2*parseFloat(style['borderWidth']) + parseFloat(style['padding']) // want some white space around border
