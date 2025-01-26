@@ -99,22 +99,33 @@ function strt(field_size) {
     // resize the minefield_canvas
     resize_canvas()
 
+    let minefield_div = document.getElementById("minefield_div");
+    const licence_height = getComputedStyle(document.getElementById("license_div")).height.slice(0, -2);
+    // const license_height = 200;
+    // const div_height = getComputedStyle(minefield_div).height.slice(0, -2);
+    // console.log(getComputedStyle(minefield_div).getPropertyValue('height'), div_height);
+
     // show the minefield_div (fade in via opacity)
     minefield_div.style.display="block";
+    minefield_div.style.transform = `translate(-50%, -50%) translate(0,${-0.5*licence_height}px)`;
+    // console.log(0.5*(div_height), 2*license_height);
     setTimeout(() => {
         minefield_div.style.opacity=1;
+
+        // Show the play_div
+        let play_div = document.getElementById("play_div");
+        play_div.style.opacity = 1.0;
+        play_div.style.pointerEvents = "auto";
+        play_div.style.transform = `translate(-50%, -50%) translate(0,${-0.5*licence_height}px)`;
+        let play_but = document.getElementById("play_but");
+        play_but.disabled = false;
+        play_but.style.pointerEvents = "auto";
+        play_but.style.cursor = "pointer";
     }, this.animationDelay + 20);
 
     draw_canvas_grid()
 
-    // Show the play_div
-    let play_div = document.getElementById("play_div");
-    play_div.style.opacity = 1.0;
-    play_div.style.pointerEvents = "auto";
-    let play_but = document.getElementById("play_but");
-    play_but.disabled = false;
-    play_but.style.pointerEvents = "auto";
-    play_but.style.cursor = "pointer";
+    
 
     // Add click detection
     let canvas = document.getElementById("minefield_canvas");
