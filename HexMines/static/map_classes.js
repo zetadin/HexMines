@@ -24,7 +24,7 @@ class Map {
 
       this.playing = false;
       this.v_shift = 0;   // vertical shift in hex_scales
-      this.v_speed = 0.001; // hex_scale/sec, will change with time later
+      this.v_speed = 0.0002; // hex_scale/msec, will change with time later
 
       if(init){ this.init(); }
     }
