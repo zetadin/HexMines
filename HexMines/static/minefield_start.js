@@ -1,33 +1,16 @@
+// Copyright Yuriy Khalak, 2025
+// Part of HexMines.
+// Released under CC BY-NC-SA: https://creativecommons.org/licenses/by-nc-sa/4.0/
 
 var generated = false;
 var map_size = 5;
 var map = undefined;
 
 
-async function load_Image(url){
-    let ext = url.split('.').pop();
-    let img_exts = ["png", "gif"] // allowed image exstensions
-    if(img_exts.includes(ext)){
-        // load the image
-        let img=new Image();
-        img.onload=function(){
-            // and add it to dict of known images
-            images[url]=img;
-        };
-        img.src=url;
-    }
-}
-
-// load images assyncroniuosly
-var mineURL = "/static/mine.png";
-var flagURL = "/static/flag.png";
-load_Image(mineURL);
-load_Image(flagURL);
-
-
 function resize_canvas(){
     // resize the minefield_canvas
-    const minefield_div_size = Math.min(window.innerHeight, window.innerWidth)
+    const licence_height = getComputedStyle(document.getElementById("license_div")).height.slice(0, -2);
+    const minefield_div_size = Math.min(window.innerHeight - licence_height, window.innerWidth)
     let minefield_div = document.getElementById("minefield_div");
     style = window.getComputedStyle(minefield_div);
     let side_extra = 2*parseFloat(style['borderWidth']) + parseFloat(style['padding']) // want some white space around border
@@ -40,9 +23,6 @@ function resize_canvas(){
 
     if(typeof map !== 'undefined'){
         map.recalc_scale();
-        if(generated){
-            draw_canvas_grid(); // redraw canvas, because resizing wipes it
-        }
     }
     else{ // retry scaling after map is instantiated
         setTimeout(() => {
@@ -61,17 +41,16 @@ async function generate(field_size) {
     map_size = field_size
     map = new Map(map_size, map_size, document.getElementById("minefield_canvas"));
 
-    let max_mines = Math.floor(0.4*map_size*map_size);
+    let max_mines = Math.floor(0.2*map_size*map_size);
     let n_mines = 0;
     while (n_mines < max_mines) {
         let m_x = Math.floor(Math.random() * map.width);
-        let m_y = Math.floor(Math.random() * map.height);
+        let m_y = Math.floor(Math.random() * map.height/2);
 
         let key = `${m_x}_${m_y}`;
         if(! (key in map.mines)){ // only add a mine if hex already doesn't have one
-            let mine = new MapFeature(m_x,m_y, mineURL);
+            let mine = new MapFeature(m_x,m_y, "Mine");
             map.mines[key] = mine;
-
             n_mines += 1;
         }
     }
@@ -86,14 +65,10 @@ function draw_canvas_grid(){
             draw_canvas_grid();
         }, 50);
         return;
-    }
-
-    // can continue
-    let canvas = document.getElementById("minefield_canvas");
-    let ctx = canvas.getContext('2d');
+    } // can now continue
 
     // draw map
-    map.draw(ctx);    
+    update();
 }
 
 function strt(field_size) {
@@ -124,17 +99,64 @@ function strt(field_size) {
     // resize the minefield_canvas
     resize_canvas()
 
-    // register listener to draw the canvas after fade in
-    minefield_div.addEventListener("transitionend", () => {
-        draw_canvas_grid();
-      });
+    let minefield_div = document.getElementById("minefield_div");
+    const licence_height = getComputedStyle(document.getElementById("license_div")).height.slice(0, -2);
+    // const license_height = 200;
+    // const div_height = getComputedStyle(minefield_div).height.slice(0, -2);
+    // console.log(getComputedStyle(minefield_div).getPropertyValue('height'), div_height);
 
     // show the minefield_div (fade in via opacity)
     minefield_div.style.display="block";
+    minefield_div.style.transform = `translate(-50%, -50%) translate(0,${-0.5*licence_height}px)`;
+    // console.log(0.5*(div_height), 2*license_height);
     setTimeout(() => {
         minefield_div.style.opacity=1;
+
+        // Show the play_div
+        let play_div = document.getElementById("play_div");
+        play_div.style.opacity = 1.0;
+        play_div.style.pointerEvents = "auto";
+        play_div.style.transform = `translate(-50%, -50%) translate(0,${-0.5*licence_height}px)`;
+        let play_but = document.getElementById("play_but");
+        play_but.disabled = false;
+        play_but.style.pointerEvents = "auto";
+        play_but.style.cursor = "pointer";
     }, this.animationDelay + 20);
 
+    draw_canvas_grid()
 
     
+
+    // Add click detection
+    let canvas = document.getElementById("minefield_canvas");
+    // canvas.addEventListener('click', map.onClick, false);
+    canvas.addEventListener('contextmenu', (e) => {e.preventDefault(); map.onRMB(e);}, false);
+
+    // Add hammer.js event listeners instead of the native one for faster response
+    var hammertime = new Hammer(canvas);
+    hammertime.on('tap', map.onClick);
+    // hammertime.on('doubletap', map.onRMB);
+    hammertime.on('press', map.onRMB);
+
+}
+
+function play(){
+    if(!generated){ // retry after 50 ms
+        setTimeout(() => {
+            play();
+        }, 50);
+        return;
+    }
+
+    // start lowering the playing field
+    map.playing=true;
+
+    // hide the play_div by making it transparent
+    let play_div = document.getElementById("play_div");
+    play_div.style.opacity = 0.0;
+    play_div.style.pointerEvents = "none";
+    let play_but = document.getElementById("play_but");
+    play_but.disabled = true;
+    play_but.style.pointerEvents = "none";
+    play_but.style.cursor = "none";
 }

@@ -1,8 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
+
+    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
+    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+    <script>eruda.init();</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+    
     <link rel="stylesheet" type="text/css" href="HexMines/static/buttons.css" >
     <link rel="shortcut icon" type="image/png" href="HexMines/static/favico.svg" >
+    <script> var static_path="HexMines" </script>
+    
 </head>
 <body>
 
@@ -11,22 +19,32 @@
     <button class="button button_start" id="Start_5" onclick="strt(5)">5x5</button>
     <button class="button button_start" id="Start_10" onclick="strt(10)">10x10</button>
     <button class="button button_start" id="Start_15" onclick="strt(15)">15x15</button>
-    
 </div>
-
 
 
 
 <div class="centered minefield_container" id="minefield_div">
 
     <canvas class="animated_canvas" id="minefield_canvas" width="2" height="2">
-    </canvas> 
-    
+    </canvas>     
+</div>
+
+
+<!--Draw Play button on top of the canvas-->
+<div class="centered start_container init_hidden" id="play_div">
+    <button class="button button_play button_diasbled" id="play_but" onclick="play()" disabled>Play</button>
 </div>
 
 <script src="HexMines/static/map_classes.js"></script>
 <script src="HexMines/static/minefield_start.js"></script>
 
+
+<div class="license_bar" id="license_div">
+    <p xmlns:cc="http://creativecommons.org/ns#" xmlns:dct="http://purl.org/dc/terms/">
+      © 2025 <a rel="cc:attributionURL dct:creator" property="cc:attributionName" href="https://khasci.ca/">Yuriy Khalak</a>
+      <img style="height:22px!important;margin-right:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by-nc-sa.svg" alt="">
+    </p> 
+</div>
 
 </body>
 </html>
