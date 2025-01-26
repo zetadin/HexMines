@@ -117,18 +117,31 @@ class Map {
       Object.values(this.mines).forEach((u) => {
           u.draw(ctx, this.hex_scale);
       });
+      Object.values(this.flags).forEach((u) => {
+        u.draw(ctx, this.hex_scale);
+      });
 
       this.detLine.draw(ctx, this.hex_scale);
     }
 
-    onClick(evt){ // LMB down
+    onClick(e){ // LMB down
         // onClick is called as an event listener,
         // so "this" is not the map!
+
+        // parse pointer event out of Hammer
+        let evt;
+        if(typeof e.changedPointers !== 'undefined'){
+          evt = e.changedPointers[0];
+        }
+        else{
+          evt = e;
+        }
 
         // skip if haven't started game or game is over
         if(map.playing==false){ return; }
         
-        // console.log("map.onClick(evt): evt=", evt)
+        console.log("map.onClick(evt): evt=", evt)
+        console.log("map.onClick(evt): evt=", evt)
 
         const a = map.hex_scale;
         const h = 0.5*a*sqrtthree;
@@ -163,8 +176,9 @@ class Map {
             }
         }
         
-        // console.log("click @ hex ", mx, my, "\ttemp:", tx, ty, "\tpixels:", evt.pageX, evt.pageY, "\trel:", rel_x, rel_y, "\ta:",a,"\th",h);
+        console.log("click @ hex ", mx, my, "\ttemp:", tx, ty, "\tpixels:", evt.pageX, evt.pageY, "\trel:", rel_x, rel_y, "\ta:",a,"\th",h);
         let key = `${mx}_${my}`;
+        console.log("map.onClick @", key);
         
         // Toggle reveal of clicked hex
         if(key in map.hexes){
@@ -175,8 +189,75 @@ class Map {
 
         // TODO: Cascade reveal neighbours
 
-        // TODO: handle RMB to place flag too
     }
+
+    onRMB(e){ // RMB down / long click / double tap
+      // onRMB is called as an event listener,
+      // so "this" is not the map!
+
+        // parse pointer event out of Hammer
+        let evt;
+        if(typeof e.changedPointers !== 'undefined'){
+          evt = e.changedPointers[0];
+        }
+        else{
+          evt = e;
+        }
+
+      // skip if haven't started game or game is over
+      if(map.playing==false){ return; }
+      
+      console.log("map.onRMB(evt): evt=", evt)
+
+      const a = map.hex_scale;
+      const h = 0.5*a*sqrtthree;
+  
+      // start  of the relative axes for click detection
+      const rel_start_x = map.x_start_px - a;
+      const rel_start_y = a * map.v_shift;
+      // read actual borders from canvas
+      const style = getComputedStyle(map.canvas);
+      const border_left = style.borderLeftWidth.slice(0, -2); // px
+      const border_top = style.borderTopWidth.slice(0, -2); // px
+      var rect = map.canvas.getBoundingClientRect();
+      
+  
+      const [rel_x, rel_y] = [evt.pageX - rect.left - border_left - rel_start_x,
+                              evt.pageY - rect.top - border_top - rel_start_y];
+      const tx = Math.floor(rel_x / (1.5*a));
+      const remx = Math.fmod(rel_x, (1.5*a));
+      const ty = Math.floor((rel_y - (tx%2==1 ? h : 0)) / (2*h)); // move odd columns down by half a hex
+      const remy = Math.fmod(rel_y - (tx%2==1 ? h : 0), (2*h));
+  
+      let [mx, my] = [tx, ty]; // default values that get overwritten if wea re actually in a neighbouring hex
+      if(remx<0.5*a){   // if we are left of here, we might be in hexes to the left,
+                        // depending which side of edges we are on
+          if(remy<h-remx*2*h/a) { // check above /
+              mx = tx - 1;
+              my = (tx%2==1) ? ty : ty-1; // reduce hex y index if we are in an even column an going left & up.
+          }
+          else if(remy>h+remx*2*h/a) { // check below \
+              mx = tx - 1;
+              my = (tx%2==1) ? ty+1 : ty; // increade hex y index if we are in an odd column an going left & down.
+          }
+      }
+      
+      // console.log("click @ hex ", mx, my, "\ttemp:", tx, ty, "\tpixels:", evt.pageX, evt.pageY, "\trel:", rel_x, rel_y, "\ta:",a,"\th",h);
+      let key = `${mx}_${my}`;
+
+      console.log("map.onRMB @", key);
+      
+      // Toggle flag on clicked hex
+      if(key in map.hexes){
+          if(key in map.flags){ // remove flag at this hex
+              delete map.flags[key];
+          }
+          else{ // create a flag at this hex
+            let flag = new MapFeature(mx,my, "Flag");
+            map.flags[key] = flag;
+          }
+      }
+  }
 }
 
 
@@ -223,6 +304,14 @@ class MapFeature {
 
   draw(ctx, hex_scale) {
     if(! this.hidden){
+
+      if(this.type == "Mine"){ // skip drawing the mine if it has a flag on it
+        let my_key = String(this.x)+"_"+String(this.y);
+        if(my_key in map.flags){
+          return;
+        }
+      }
+
       // only draw if the image is done loading
       if(this.iconURL in images && images[this.iconURL]) {
         const r = hex_scale;

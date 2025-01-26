@@ -114,7 +114,15 @@ function strt(field_size) {
 
     // Add click detection
     let canvas = document.getElementById("minefield_canvas");
-    canvas.addEventListener('click', map.onClick, false);
+    // canvas.addEventListener('click', map.onClick, false);
+    canvas.addEventListener('contextmenu', (e) => {e.preventDefault(); map.onRMB(e);}, false);
+
+    // Add hammer.js event listeners instead of the native one for faster response
+    var hammertime = new Hammer(canvas);
+    hammertime.on('tap', map.onClick);
+    // hammertime.on('doubletap', map.onRMB);
+    hammertime.on('press', map.onRMB);
+
 }
 
 function play(){
