@@ -140,9 +140,6 @@ class Map {
         // skip if haven't started game or game is over
         if(map.playing==false){ return; }
         
-        console.log("map.onClick(evt): evt=", evt)
-        console.log("map.onClick(evt): evt=", evt)
-
         const a = map.hex_scale;
         const h = 0.5*a*sqrtthree;
     
@@ -176,9 +173,8 @@ class Map {
             }
         }
         
-        console.log("click @ hex ", mx, my, "\ttemp:", tx, ty, "\tpixels:", evt.pageX, evt.pageY, "\trel:", rel_x, rel_y, "\ta:",a,"\th",h);
+        // console.log("click @ hex ", mx, my, "\ttemp:", tx, ty, "\tpixels:", evt.pageX, evt.pageY, "\trel:", rel_x, rel_y, "\ta:",a,"\th",h);
         let key = `${mx}_${my}`;
-        console.log("map.onClick @", key);
         
         // Toggle reveal of clicked hex
         if(key in map.hexes){
@@ -206,8 +202,6 @@ class Map {
 
       // skip if haven't started game or game is over
       if(map.playing==false){ return; }
-      
-      console.log("map.onRMB(evt): evt=", evt)
 
       const a = map.hex_scale;
       const h = 0.5*a*sqrtthree;
@@ -242,10 +236,8 @@ class Map {
           }
       }
       
-      // console.log("click @ hex ", mx, my, "\ttemp:", tx, ty, "\tpixels:", evt.pageX, evt.pageY, "\trel:", rel_x, rel_y, "\ta:",a,"\th",h);
+      // console.log("RMB @ hex ", mx, my, "\ttemp:", tx, ty, "\tpixels:", evt.pageX, evt.pageY, "\trel:", rel_x, rel_y, "\ta:",a,"\th",h);
       let key = `${mx}_${my}`;
-
-      console.log("map.onRMB @", key);
       
       // Toggle flag on clicked hex
       if(key in map.hexes){
