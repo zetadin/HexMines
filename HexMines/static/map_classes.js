@@ -6,6 +6,34 @@ var images = {}
 // fmod function from https://gist.github.com/wteuber/6241786
 Math.fmod = function (a,b) { return Number((a - (Math.floor(a / b) * b)).toPrecision(8)); };
 
+// load images assyncroniuosly
+async function load_Image(url){
+  let ext = url.split('.').pop();
+  let img_exts = ["png", "gif"] // allowed image exstensions
+  if(img_exts.includes(ext)){
+      // load the image
+      let img=new Image();
+      img.onload=function(){
+          // and add it to dict of known images
+          images[url]=img;
+      };
+      img.src=url;
+  }
+}
+
+// Preload all the MapFeature images
+var feature_icons = {
+    "Mine": static_path+"/static/mine.png",
+    "Boom": static_path+"/static/favico.png",
+    "Flag": static_path+"/static/flag.png",
+    "None": "",
+}
+for (const key in feature_icons) {
+    load_Image(feature_icons[key]);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
 
 class Map {
     constructor(height, width, containing_canvas, init=true) {
@@ -173,7 +201,6 @@ class Map {
       // console.log("pointer event @ hex ", mx, my, "\ttemp:", tx, ty, "\tpixels:", evt.pageX, evt.pageY, "\trel:", rel_x, rel_y, "\ta:",a,"\th",h);
 
       return [mx, my];
-
     }
 
 
@@ -188,7 +215,13 @@ class Map {
             map.hexes[key].revealed = ! map.hexes[key].revealed;
         }
 
-        // TODO: Check for mines in this hex
+        // Check for mines in this hex
+        if(key in map.mines){
+          // Game Over
+          map.playing = false;
+          map.mines[key].type = "Boom";
+          map.mines[key].iconURL = feature_icons["Boom"];
+        }
 
         // TODO: Cascade reveal neighbours
 
@@ -215,32 +248,6 @@ class Map {
 }
 
 
-
-// load images assyncroniuosly
-async function load_Image(url){
-  let ext = url.split('.').pop();
-  let img_exts = ["png", "gif"] // allowed image exstensions
-  if(img_exts.includes(ext)){
-      // load the image
-      let img=new Image();
-      img.onload=function(){
-          // and add it to dict of known images
-          images[url]=img;
-      };
-      img.src=url;
-  }
-}
-
-// Preload all the MapFeature images
-var feature_icons = {
-    "Mine": static_path+"/static/mine.png",
-    "Boom": static_path+"/static/favico.png",
-    "Flag": static_path+"/static/flag.png",
-    "None": "",
-}
-for (const key in feature_icons) {
-    load_Image(feature_icons[key]);
-}
 
 class MapFeature {
   constructor(x,y, type="None") {
