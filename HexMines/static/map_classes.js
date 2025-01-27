@@ -479,7 +479,8 @@ class Hex {
       if(s_y > map.detLine.y){
         // mark this hex as triggered and reveal it.
         this.triggered_before = true;
-        map.reveal(this.x, this.y);
+
+        // map.reveal(this.x, this.y); // this will remove flags on mines!
       }
 
       // delete hexes and features below the canvas
