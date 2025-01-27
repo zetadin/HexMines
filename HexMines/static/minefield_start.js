@@ -67,6 +67,7 @@ async function generate(field_size) {
             // place a mine only if there are at most max_mines_near_new_mine mines around it
             if(num_neigh_mines <= max_mines_near_new_mine){
                 let mine = new MapFeature(m_x,m_y, "Mine");
+                mine.hidden = true;
                 map.mines[key] = mine;
                 n_mines += 1;
             }

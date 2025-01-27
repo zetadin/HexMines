@@ -35,9 +35,7 @@ var feature_icons = {
 for (const key in feature_icons) {
     load_Image(feature_icons[key]);
 }
-
 //////////////////////////////////////////////////////////////////////////////
-
 
 class Map {
     constructor(height, width, containing_canvas, init=true) {
@@ -83,6 +81,14 @@ class Map {
 
     rem_row(){
       // TODO: remove the bottom row of mines at the bottom of the map
+    }
+
+    
+    showMines(){
+      // called on game over to show the game board
+      for (const key in this.mines) {
+        this.mines[key].hidden = false;
+      }
     }
 
 
@@ -225,6 +231,7 @@ class Map {
         map.playing = false;
         map.mines[key].type = "Boom";
         map.mines[key].iconURL = feature_icons["Boom"];
+        map.showMines();
         return;
       }
 
@@ -359,6 +366,7 @@ class MapFeature {
           map.playing = false;
           this.type = "Boom";
           this.iconURL = feature_icons[this.type];
+          map.showMines();
         }
       }
     } 
@@ -507,17 +515,19 @@ class Hex {
       ctx.lineWidth = this.border_w;
       ctx.stroke();
 
-      ctx.fillStyle = "#000000";
-      ctx.textAlign = "center";
-      ctx.textBaseline = 'middle';
-      ctx.font = "12px sans";
-      ctx.fillText(`${this.x},${this.y}`, s_x, s_y+hex_scale*0.75);
+      if(this.revealed){
+        ctx.fillStyle = "#000000";
+        ctx.textAlign = "center";
+        ctx.textBaseline = 'middle';
+        ctx.font = "12px sans";
+        ctx.fillText(`${this.x},${this.y}`, s_x, s_y+hex_scale*0.75);
 
-      if(this.num_neigh_mines>0){
-        ctx.font = `${Math.round(hex_scale*1.4)}px Verdana`;
-        // ctx.fillStyle = "#303030";
-        ctx.fillStyle = number_colors[this.num_neigh_mines];
-        ctx.fillText(`${this.num_neigh_mines}`, s_x, s_y);
+        if(this.num_neigh_mines>0){
+          ctx.font = `${Math.round(hex_scale*1.4)}px Verdana`;
+          // ctx.fillStyle = "#303030";
+          ctx.fillStyle = number_colors[this.num_neigh_mines];
+          ctx.fillText(`${this.num_neigh_mines}`, s_x, s_y);
+        }
       }
     }    
 }
