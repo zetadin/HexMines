@@ -7,6 +7,11 @@ var map_size = 5;
 var map = undefined;
 
 
+function is_mobile(){
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
+
+
 function resize_canvas(){
     // resize the minefield_canvas
     const licence_height = getComputedStyle(document.getElementById("license_div")).height.slice(0, -2);
@@ -97,7 +102,7 @@ function strt(field_size) {
     
 
     // resize the minefield_canvas
-    resize_canvas()
+    resize_canvas();
 
     let minefield_div = document.getElementById("minefield_div");
     const licence_height = getComputedStyle(document.getElementById("license_div")).height.slice(0, -2);
@@ -129,14 +134,19 @@ function strt(field_size) {
 
     // Add click detection
     let canvas = document.getElementById("minefield_canvas");
-    // canvas.addEventListener('click', map.onClick, false);
-    canvas.addEventListener('contextmenu', (e) => {e.preventDefault(); map.onRMB(e);}, false);
 
     // Add hammer.js event listeners instead of the native one for faster response
     var hammertime = new Hammer(canvas);
     hammertime.on('tap', map.onClick);
-    // hammertime.on('doubletap', map.onRMB);
-    hammertime.on('press', map.onRMB);
+    
+    //RMB
+    if(is_mobile()){ // mobile has no contextmenu
+        hammertime.on('press', map.onRMB);
+    }
+    else{
+        canvas.addEventListener('contextmenu', (e) => {e.preventDefault(); map.onRMB(e);}, false);
+    }
+    
 
 }
 
