@@ -169,4 +169,8 @@ function play(){
     play_but.disabled = true;
     play_but.style.pointerEvents = "none";
     play_but.style.cursor = "none";
+
+
+    // reveal bottom of map
+    map.reveal(0, map.height-1);
 }
