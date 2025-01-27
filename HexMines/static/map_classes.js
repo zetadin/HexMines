@@ -214,6 +214,9 @@ class Map {
           // stop traversing if this hex is already revealed
           if(map.hexes[key].revealed){return;}
           map.hexes[key].revealed = true;
+
+          // remove flag on reveal
+          if(key in map.flags){delete map.flags[key];}
       }
 
       // Check for mines in this hex
@@ -247,8 +250,12 @@ class Map {
         if(map.playing==false){ return; }
         
         let [mx, my] = map.findHexFromPointerEvent(e);
+        let key = `${mx}_${my}`;
 
-        map.reveal(mx,my); // with cascade
+        if(key in map.hexes){
+          if(map.hexes[key].triggered_before){return;} // skip if already triggered
+          map.reveal(mx,my); // with cascade
+        }
 
     }
 
@@ -261,16 +268,24 @@ class Map {
 
       let [mx, my] = map.findHexFromPointerEvent(e);
       let key = `${mx}_${my}`;
+
+      if(key in map.hexes){
+        
+      }
       
       // Toggle flag on clicked hex
       if(key in map.hexes){
-          if(key in map.flags){ // remove flag at this hex
-              delete map.flags[key];
-          }
-          else{ // create a flag at this hex
-            let flag = new MapFeature(mx,my, "Flag");
-            map.flags[key] = flag;
-          }
+        if(map.hexes[key].triggered_before){return;} // skip if already triggered
+
+        if(map.hexes[key].revealed){return;} // don't put flags on revealed hexes
+
+        if(key in map.flags){ // remove flag at this hex
+            delete map.flags[key];
+        }
+        else{ // create a flag at this hex
+          let flag = new MapFeature(mx,my, "Flag");
+          map.flags[key] = flag;
+        }
       }
   }
 }
@@ -405,6 +420,7 @@ class Hex {
       this.border_w = 1;
       this.border_color = "#000000"; //"#A0A0A0"
       this.num_neigh_mines=-1;
+      this.triggered_before = false;
 
       // find each Hex's neighbours
       this.neighbour_dict = [];
@@ -458,8 +474,15 @@ class Hex {
         this.calc_neigh_mines(map.mines);
       }
 
-      // delete hexes and features below the canvas
+      
       let s_y = sqrtthree*map.hex_scale * (this.y + (this.x%2==1 ? 0.5 : 0.0)) + map.y_start_px;
+      if(s_y > map.detLine.y){
+        // mark this hex as triggered and reveal it.
+        this.triggered_before = true;
+        map.reveal(this.x, this.y);
+      }
+
+      // delete hexes and features below the canvas
       if(s_y > map.detLine.y + 2.0*map.hex_scale){
         let key = String(this.x)+"_"+String(this.y);
         delete map.hexes[key];
