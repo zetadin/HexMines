@@ -134,6 +134,9 @@ class Map {
       Object.values(this.mines).forEach((u) => {
           u.update(dt);
       });
+      Object.values(this.flags).forEach((u) => {
+          u.update(dt);
+      });
     }
     
 
@@ -206,7 +209,6 @@ class Map {
 
     reveal(x,y){
       let key = `${x}_${y}`;
-      console.log("Reveal", x, y);
 
       if(key in map.hexes){
           // stop traversing if this hex is already revealed
@@ -227,9 +229,7 @@ class Map {
       if(map.hexes[key].num_neigh_mines == 0){
         for (const dir_key in map.hexes[key].neighbour_dict) {
           let neigh_key = map.hexes[key].neighbour_dict[dir_key];
-          console.log("Reveal Cascading", x, y, "to key", neigh_key);
           if(neigh_key in map.hexes){ // don't do anything for neighbors not in the map yet
-            console.log("Reveal Cascading", x, y, "neigh_key found");
             let neigh = map.hexes[neigh_key];
             map.reveal(neigh.x, neigh.y);
           }
@@ -282,6 +282,7 @@ class MapFeature {
     this.x = x;
     this.y = y;
     this.hidden = false;
+    this.triggered_before = false;
     this.type = type;
     if(!(type in feature_icons)) { //unrecognized type requested
       console.log("Unknown MapFeature type (", type,") @ ",x,",",y);
@@ -314,13 +315,48 @@ class MapFeature {
   }
 
   update(dt) {
-    // TODO: if mine and below Triger line -> detonate
+    if(this.triggered_before){
+      // skip already triggered features so we don't count influence on score more than once
+      return;
+    }
+
     let s_y = sqrtthree*map.hex_scale * (this.y + (this.x%2==1 ? 0.5 : 0.0)) + map.y_start_px;
-    if(s_y > map.detLine.y){
-      // Game Over
-      map.playing = false;
-      this.type = "Boom";
-      this.iconURL = feature_icons[this.type];
+    let triggered = s_y > map.detLine.y;
+    let key = String(this.x)+"_"+String(this.y);
+
+    if(this.type=="Mine"){
+      if(key in map.flags){ 
+        // marked mine
+        if(triggered){
+          // TODO: increase score
+          console.log("Score +1");
+
+          // Mark both mine and flag as trigered
+          this.triggered_before = true;
+          map.flags[key].triggered_before = true;
+        }
+        return;
+      }
+      else{
+        //unmarked mine 
+        if(triggered){ // below Triger line -> detonate
+          // Game Over
+          map.playing = false;
+          this.type = "Boom";
+          this.iconURL = feature_icons[this.type];
+        }
+      }
+    } 
+    
+    else if(this.type=="Flag"){ // flags updated after mines
+      if(triggered){
+        if(!(key in map.mines)){ // Flag without a mine
+          // TODO: decrease score
+          console.log("Score -1");
+        }
+        // mark flag as triggered
+        this.triggered_before = true;
+      }
     }
 
   }
