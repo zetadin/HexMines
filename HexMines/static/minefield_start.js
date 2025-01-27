@@ -5,6 +5,7 @@
 var generated = false;
 var map_size = 5;
 var map = undefined;
+var max_mines_near_new_mine = 3;
 
 
 function is_mobile(){
@@ -54,9 +55,21 @@ async function generate(field_size) {
 
         let key = `${m_x}_${m_y}`;
         if(! (key in map.mines)){ // only add a mine if hex already doesn't have one
-            let mine = new MapFeature(m_x,m_y, "Mine");
-            map.mines[key] = mine;
-            n_mines += 1;
+
+            //count num mines around it
+            let num_neigh_mines = 0;
+            for (const dir_key in map.hexes[key].neighbour_dict) {
+                let neigh_key = map.hexes[key].neighbour_dict[dir_key];
+                if(neigh_key in map.mines){
+                    num_neigh_mines += 1;
+                }
+            }
+            // place a mine only if there are at most max_mines_near_new_mine mines around it
+            if(num_neigh_mines <= max_mines_near_new_mine){
+                let mine = new MapFeature(m_x,m_y, "Mine");
+                map.mines[key] = mine;
+                n_mines += 1;
+            }
         }
     }
 
