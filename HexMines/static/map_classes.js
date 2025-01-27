@@ -204,6 +204,40 @@ class Map {
       return [mx, my];
     }
 
+    reveal(x,y){
+      let key = `${x}_${y}`;
+      console.log("Reveal", x, y);
+
+      if(key in map.hexes){
+          // stop traversing if this hex is already revealed
+          if(map.hexes[key].revealed){return;}
+          map.hexes[key].revealed = true;
+      }
+
+      // Check for mines in this hex
+      if(key in map.mines){
+        // Game Over
+        map.playing = false;
+        map.mines[key].type = "Boom";
+        map.mines[key].iconURL = feature_icons["Boom"];
+        return;
+      }
+
+      // Cascade reveal neighbours if clicked on emptry hex
+      if(map.hexes[key].num_neigh_mines == 0){
+        for (const dir_key in map.hexes[key].neighbour_dict) {
+          let neigh_key = map.hexes[key].neighbour_dict[dir_key];
+          console.log("Reveal Cascading", x, y, "to key", neigh_key);
+          if(neigh_key in map.hexes){ // don't do anything for neighbors not in the map yet
+            console.log("Reveal Cascading", x, y, "neigh_key found");
+            let neigh = map.hexes[neigh_key];
+            map.reveal(neigh.x, neigh.y);
+          }
+        }
+      }
+    
+    }
+
 
     onClick(e){ // LMB down
         // onClick is called as an event listener,
@@ -213,21 +247,8 @@ class Map {
         if(map.playing==false){ return; }
         
         let [mx, my] = map.findHexFromPointerEvent(e);
-        let key = `${mx}_${my}`;
-        // Toggle reveal of clicked hex
-        if(key in map.hexes){
-            map.hexes[key].revealed = ! map.hexes[key].revealed;
-        }
 
-        // Check for mines in this hex
-        if(key in map.mines){
-          // Game Over
-          map.playing = false;
-          map.mines[key].type = "Boom";
-          map.mines[key].iconURL = feature_icons["Boom"];
-        }
-
-        // TODO: Cascade reveal neighbours
+        map.reveal(mx,my); // with cascade
 
     }
 
