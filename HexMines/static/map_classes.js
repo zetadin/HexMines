@@ -457,6 +457,15 @@ class Hex {
       if(this.num_neigh_mines<0 && generated){
         this.calc_neigh_mines(map.mines);
       }
+
+      // delete hexes and features below the canvas
+      let s_y = sqrtthree*map.hex_scale * (this.y + (this.x%2==1 ? 0.5 : 0.0)) + map.y_start_px;
+      if(s_y > map.detLine.y + 2.0*map.hex_scale){
+        let key = String(this.x)+"_"+String(this.y);
+        delete map.hexes[key];
+        delete map.mines[key];
+        delete map.flags[key];
+      }
     }
 
     draw(ctx, hex_scale) {
